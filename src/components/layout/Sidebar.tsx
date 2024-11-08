@@ -13,7 +13,7 @@ const ROLE = {
 };
 
 export default function Sidebar() {
-  const role = "faculty";
+  const role = "admin";
 
   let sidebarItems;
 
