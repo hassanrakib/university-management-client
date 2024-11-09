@@ -2,11 +2,16 @@ import { Button } from "antd";
 import { useForm } from "react-hook-form";
 import { useLoginMutation } from "../redux/features/auth/authApi";
 import { useAppDispatch } from "../redux/hooks";
-import { setUser } from "../redux/features/auth/authSlice";
+import { setUser, User } from "../redux/features/auth/authSlice";
 import { verifyToken } from "../utils/verifyToken";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function Login() {
   const dispatch = useAppDispatch();
+
+  // navigate function is taken from react-router-dom to programmatically navigate
+  const navigate = useNavigate();
 
   // get the register & handleSubmit function from react-hook-form
   const { register, handleSubmit } = useForm({
@@ -17,25 +22,44 @@ export default function Login() {
   });
 
   // the first variable is the function to do the mutation
-  const [login, { error }] = useLoginMutation();
+  const [login] = useLoginMutation();
 
   // data : {userId: string, password: string} because of using react-hook-form
   const onSubmit = async (data: { userId: string; password: string }) => {
-    const loginCredentials = {
-      id: data.userId,
-      password: data.password,
-    };
+    // show the loading toast
+    const loadingToastId = toast.loading("Logging in...");
 
-    // instead of getting the result like this {data: {...data}} get this {...data} actual data using unwrap()
-    const result: { data: { accessToken: string } } = await login(
-      loginCredentials
-    ).unwrap();
+    try {
+      const loginCredentials = {
+        id: data.userId,
+        password: data.password,
+      };
 
-    // decode token to get the user: {userId: "", role: ""}
-    const user = verifyToken(result.data.accessToken);
+      // instead of getting the result like this {data: {...data}} get this {...data} actual data using unwrap()
+      const result: { data: { accessToken: string } } = await login(
+        loginCredentials
+      ).unwrap();
 
-    // set the user to the local state
-    dispatch(setUser({ user, token: result.data.accessToken }));
+      // decode token to get the user: {userId: "", role: ""}
+      const user = verifyToken(result.data.accessToken) as User;
+
+      // set the user to the local state
+      dispatch(setUser({ user, token: result.data.accessToken }));
+
+      // redirect after login
+      navigate(`/${user.role}/dashboard`);
+
+      // replace the loading toast using the second argument
+      toast.success("Logged in successfully!", {
+        id: loadingToastId,
+        duration: 2000,
+      });
+    } catch (err) {
+      toast.error("Something went wrong!", {
+        id: loadingToastId,
+        duration: 2000,
+      });
+    }
   };
 
   return (
