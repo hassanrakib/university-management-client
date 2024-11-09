@@ -6,6 +6,7 @@ import { setUser, User } from "../redux/features/auth/authSlice";
 import { verifyToken } from "../utils/verifyToken";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import PHForm from "../components/form/PHForm";
 
 export default function Login() {
   const dispatch = useAppDispatch();
@@ -13,8 +14,8 @@ export default function Login() {
   // navigate function is taken from react-router-dom to programmatically navigate
   const navigate = useNavigate();
 
-  // get the register & handleSubmit function from react-hook-form
-  const { register, handleSubmit } = useForm({
+  // get the register function from react-hook-form
+  const { register } = useForm({
     defaultValues: {
       userId: "A-0001",
       password: "admin123",
@@ -26,44 +27,45 @@ export default function Login() {
 
   // data : {userId: string, password: string} because of using react-hook-form
   const onSubmit = async (data: { userId: string; password: string }) => {
-    // show the loading toast
-    const loadingToastId = toast.loading("Logging in...");
+    console.log(data);
+    // // show the loading toast
+    // const loadingToastId = toast.loading("Logging in...");
 
-    try {
-      const loginCredentials = {
-        id: data.userId,
-        password: data.password,
-      };
+    // try {
+    //   const loginCredentials = {
+    //     id: data.userId,
+    //     password: data.password,
+    //   };
 
-      // instead of getting the result like this {data: {...data}} get this {...data} actual data using unwrap()
-      const result: { data: { accessToken: string } } = await login(
-        loginCredentials
-      ).unwrap();
+    //   // instead of getting the result like this {data: {...data}} get this {...data} actual data using unwrap()
+    //   const result: { data: { accessToken: string } } = await login(
+    //     loginCredentials
+    //   ).unwrap();
 
-      // decode token to get the user: {userId: "", role: ""}
-      const user = verifyToken(result.data.accessToken) as User;
+    //   // decode token to get the user: {userId: "", role: ""}
+    //   const user = verifyToken(result.data.accessToken) as User;
 
-      // set the user to the local state
-      dispatch(setUser({ user, token: result.data.accessToken }));
+    //   // set the user to the local state
+    //   dispatch(setUser({ user, token: result.data.accessToken }));
 
-      // redirect after login
-      navigate(`/${user.role}/dashboard`);
+    //   // redirect after login
+    //   navigate(`/${user.role}/dashboard`);
 
-      // replace the loading toast using the second argument
-      toast.success("Logged in successfully!", {
-        id: loadingToastId,
-        duration: 2000,
-      });
-    } catch (err) {
-      toast.error("Something went wrong!", {
-        id: loadingToastId,
-        duration: 2000,
-      });
-    }
+    //   // replace the loading toast using the second argument
+    //   toast.success("Logged in successfully!", {
+    //     id: loadingToastId,
+    //     duration: 2000,
+    //   });
+    // } catch (err) {
+    //   toast.error("Something went wrong!", {
+    //     id: loadingToastId,
+    //     duration: 2000,
+    //   });
+    // }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <PHForm onSubmit={onSubmit}>
       <div>
         <label htmlFor="id">ID:</label>
         <input type="text" id="id" {...register("userId")} />
@@ -73,6 +75,6 @@ export default function Login() {
         <input type="text" id="password" {...register("password")} />
       </div>
       <Button htmlType="submit">Login</Button>
-    </form>
+    </PHForm>
   );
 }
