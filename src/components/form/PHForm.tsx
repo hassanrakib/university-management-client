@@ -1,3 +1,4 @@
+import { Form } from "antd";
 import React from "react";
 import {
   FieldValues,
@@ -7,23 +8,35 @@ import {
 } from "react-hook-form";
 
 type FormConfig = {
-  defaultValues?: Record<string, unknown>
-}
+  defaultValues?: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  resolver?: any;
+};
 
 type PHFormProps = {
   onSubmit: SubmitHandler<FieldValues>;
   children: React.ReactNode;
 } & FormConfig;
 
-const PHForm = ({ onSubmit, children, defaultValues }: PHFormProps) => {
+const PHForm = ({
+  onSubmit,
+  children,
+  defaultValues,
+  resolver,
+}: PHFormProps) => {
   const formConfig: FormConfig = {};
-  if(defaultValues) {
+  if (defaultValues) {
     formConfig["defaultValues"] = defaultValues;
+  }
+  if (resolver) {
+    formConfig["resolver"] = resolver;
   }
   const methods = useForm(formConfig);
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)}>{children}</form>
+      <Form layout="vertical" onFinish={methods.handleSubmit(onSubmit)}>
+        {children}
+      </Form>
     </FormProvider>
   );
 };

@@ -54,8 +54,9 @@ export default function Login() {
         id: loadingToastId,
         duration: 2000,
       });
-    } catch (err) {
-      toast.error("Something went wrong!", {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast.error(err.data.message, {
         id: loadingToastId,
         duration: 2000,
       });
