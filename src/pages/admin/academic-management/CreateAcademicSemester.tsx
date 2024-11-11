@@ -5,7 +5,9 @@ import PHSelect from "../../../components/form/PHSelect";
 import { academicSemestersNames } from "../../../constants/semester";
 import { monthOptions } from "../../../constants/global";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {z} from 'zod';
+import { academicSemesterSchema } from "../../../schemas/academicManagement.schema";
+import { useAddAcademicSemesterMutation } from "../../../redux/features/admin/academicManagement.api";
+import { toast } from "sonner";
 
 const currentYear = new Date().getFullYear();
 
@@ -14,50 +16,47 @@ const academicYears = [0, 1, 2, 3, 4].map((number) => ({
   label: String(currentYear + number),
 }));
 
-const academicSemesterSchema = z.object({
-  name: z.string({required_error: 'Semester name is required!'}),
-  code: z.string(),
-  year: z.string(),
-  startMonth: z.string(),
-  endMonth: z.string(),
-})
-
 const CreateAcademicSemester = () => {
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const [addAcademicSemester] = useAddAcademicSemesterMutation();
+
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const name = academicSemestersNames[Number(data.name) - 1]?.label;
     const newAcademicSemester = {
       name: name,
       code: data.name,
       year: data.year,
+      startMonth: data.startMonth,
+      endMonth: data.endMonth,
     };
 
-    console.log(newAcademicSemester);
+    try {
+      // unwrap exposes errors directly
+      await addAcademicSemester(newAcademicSemester).unwrap();
+      toast.success('Semester created!');
+    } catch (err) {
+      toast.error(err.data.message);
+    }
   };
 
   return (
     <Flex justify="center" align="center">
       <Col span={6}>
-        <PHForm onSubmit={onSubmit} resolver={zodResolver(academicSemesterSchema)}>
+        <PHForm
+          onSubmit={onSubmit}
+          resolver={zodResolver(academicSemesterSchema)}
+        >
           <PHSelect
             label="Semester Name:"
             name="name"
             options={academicSemestersNames}
           />
-          <PHSelect
-            label="Year:"
-            name="year"
-            options={academicYears}
-          />
+          <PHSelect label="Year:" name="year" options={academicYears} />
           <PHSelect
             label="Start Month:"
             name="startMonth"
             options={monthOptions}
           />
-          <PHSelect
-            label="End Month:"
-            name="endMonth"
-            options={monthOptions}
-          />
+          <PHSelect label="End Month:" name="endMonth" options={monthOptions} />
           <Button htmlType="submit">Create</Button>
         </PHForm>
       </Col>

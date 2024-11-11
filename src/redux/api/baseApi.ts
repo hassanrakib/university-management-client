@@ -7,6 +7,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { RootState } from "../store";
 import { logout, setUser } from "../features/auth/authSlice";
+import { toast } from "sonner";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:5000/api/v1",
@@ -29,6 +30,12 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
+
+
+  // if resource not found
+  if(result.error?.status === 404) {
+    toast.error(result.error.data.message);
+  }
 
   // if access token is invalid get a new access token
   if (result.error?.status === 401) {

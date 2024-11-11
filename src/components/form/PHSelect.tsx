@@ -11,13 +11,10 @@ const PHSelect = ({ label, name, options }: PHSelectProps) => {
   return (
     <Controller
       name={name}
-      render={({ field, fieldState: {error} }) => (
+      render={({ field, fieldState: { error } }) => (
         <Form.Item label={label}>
-          <Select
-            {...field}
-            options={options}
-          />
-          {error && <small>{error.message}</small>}
+          <Select {...field} options={options} />
+          {error && <small style={{ color: "red"}}>{error.message}</small>}
         </Form.Item>
       )}
     />
