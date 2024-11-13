@@ -6,3 +6,7 @@ export const academicSemesterSchema = z.object({
   startMonth: z.string({ required_error: "Start month is required!" }),
   endMonth: z.string({ required_error: "End month is required!" }),
 });
+
+export const academicFacultySchema = z.object({
+  name: z.string({required_error: "Academic faculty name is required!"}),
+});

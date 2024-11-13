@@ -15,7 +15,7 @@ const PHInput = ({ type, name, label }: PHInputProps) => {
         render={({ field, fieldState: {error} }) => (
           <Form.Item label={label}>
             <Input {...field} type={type} id={name} />
-            {error && <small>{error.message}</small>}
+            {error && <small style={{color: 'red'}}>{error.message}</small>}
           </Form.Item>
         )}
       />
