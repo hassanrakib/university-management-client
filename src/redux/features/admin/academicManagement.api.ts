@@ -4,7 +4,7 @@ import { baseApi } from "../../api/baseApi";
 const academicManagementApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllSemesters: builder.query({
-      query: (args: TQueryParam[]) => {
+      query: (args: TQueryParam[] | undefined) => {
         const params = new URLSearchParams();
 
         if (args) {
