@@ -10,6 +10,7 @@ import {
   useGetAllSemestersQuery,
 } from "../../../redux/features/admin/academicManagement.api";
 import { useAddStudentMutation } from "../../../redux/features/admin/userManagement.api";
+import { toast } from "sonner";
 
 const studentDefaultValue = {
   name: {
@@ -68,20 +69,26 @@ export default function CreateStudent() {
     value: item._id,
   }));
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    console.log(data);
-
-    const studentData = {
-      student: data,
-    };
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const toastId = toast.loading("Creating...");
+    const { image, ...student } = data;
 
     const formData = new FormData();
 
     // send student data in the data of FormData => to the backend
-    formData.append("data", JSON.stringify(studentData));
+    formData.append("data", JSON.stringify({password: 'student123', student }));
+
+    // send profile picture in the 'file' field of FormData => to the backend
+    formData.append("file", image);
 
     // save to db
-    // addStudent(formData);
+    const res = await addStudent(formData);
+
+    if (res.error) {
+      toast.error(res.error?.data?.message, { id: toastId });
+    } else {
+      toast.success(res.data.message, { id: toastId });
+    }
 
     // just to see
     // console.log(Object.fromEntries(formData));
