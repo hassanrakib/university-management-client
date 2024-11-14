@@ -4,7 +4,7 @@ export type Route = {
 };
 
 export type Item = {
-  name: string;
+  name?: string;
   path?: string;
   element?: React.JSX.Element;
   children?: Item[];
