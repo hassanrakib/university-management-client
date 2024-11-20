@@ -33,8 +33,35 @@ const userManagementApi = baseApi.injectEndpoints({
         body: data,
       }),
     }),
+    getAllFaculties: builder.query({
+      query: (args: TQueryParam[] | undefined) => {
+        const params = new URLSearchParams();
+
+        if (args) {
+          args.forEach((item) => {
+            params.append(item.name, String(item.value));
+          });
+        }
+
+        return {
+          url: "/faculties",
+          method: "GET",
+          params,
+        };
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transformResponse: (response: TResponse<any>) => {
+        return {
+          data: response.data,
+          meta: response.meta,
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetAllStudentsQuery, useAddStudentMutation } =
-  userManagementApi;
+export const {
+  useGetAllStudentsQuery,
+  useAddStudentMutation,
+  useGetAllFacultiesQuery,
+} = userManagementApi;
