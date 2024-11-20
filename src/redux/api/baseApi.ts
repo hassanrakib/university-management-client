@@ -47,6 +47,8 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
     const data = await res.json();
 
+    console.log(data);
+
     // if the refreshToken is valid & everything goes well we get the accessToken
     if (data.data?.accessToken) {
       const user = (api.getState() as RootState).auth.user!;
@@ -67,5 +69,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithRefreshToken,
+  tagTypes: ["semesterRegistrations"],
   endpoints: () => ({}),
 });
