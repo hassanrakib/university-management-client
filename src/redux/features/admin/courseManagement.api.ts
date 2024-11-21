@@ -86,12 +86,21 @@ const courseManagementApi = baseApi.injectEndpoints({
         body: args.data,
       }),
     }),
+    getCourseFaculties: builder.query({
+      query: (courseId: string) => {
+        return {
+          url: `/courses/${courseId}/get-faculties`,
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
 export const {
   useGetSemesterRegistrationsQuery,
   useGetAllCoursesQuery,
+  useGetCourseFacultiesQuery,
   useAddSemesterRegistrationMutation,
   useAddCourseMutation,
   useUpdateSemesterRegistrationMutation,

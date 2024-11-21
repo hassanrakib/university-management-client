@@ -1,15 +1,37 @@
 import { Button, Col, Flex } from "antd";
 import PHForm from "../../../components/form/PHForm";
 import PHSelect from "../../../components/form/PHSelect";
-import { useGetAllCoursesQuery } from "../../../redux/features/admin/courseManagement.api";
+import {
+  useGetAllCoursesQuery,
+  useGetCourseFacultiesQuery,
+} from "../../../redux/features/admin/courseManagement.api";
+import PHSelectWithWatch from "../../../components/form/PHSelectWithWatch";
+import { useState } from "react";
 
 const OfferCourse = () => {
-    const { data: courses } = useGetAllCoursesQuery(undefined);
+  const [courseId, setCourseId] = useState("");
 
-    const coursesOptions = courses?.data.map((item) => ({
-      label: item.title,
-      value: item._id,
-    }));
+  const { data: courses } = useGetAllCoursesQuery(undefined);
+
+  const coursesOptions = courses?.data.map((item) => ({
+    label: item.title,
+    value: item._id,
+  }));
+
+  const { data: courseFaculties, isFetching: isCourseFacultiesFetching } =
+    useGetCourseFacultiesQuery(courseId, {
+      skip: Boolean(!courseId),
+      refetchOnMountOrArgChange: true,
+    });
+
+  const courseFacultiesOptions = courseFaculties?.data?.faculties?.map(
+    (faculty) => ({
+      label: faculty.name.firstName + " " + faculty.name.lastName,
+      value: faculty._id,
+    })
+  ) || [];
+
+  console.log(courseFaculties?.data?.faculties);
 
   const onSubmit = (data) => {
     console.log(data);
@@ -19,15 +41,17 @@ const OfferCourse = () => {
     <Flex justify="center" align="center">
       <Col span={6}>
         <PHForm onSubmit={onSubmit}>
-          <PHSelect
+          <PHSelectWithWatch
             label="Course:"
             name="course"
             options={coursesOptions}
+            onValueChange={setCourseId}
           />
           <PHSelect
-            label="Academic Semester:"
-            name="academicSemester"
-            options={[]}
+            label="Faculty:"
+            name="faculty"
+            disabled={isCourseFacultiesFetching || !courseId}
+            options={courseFacultiesOptions}
           />
           <Button htmlType="submit">Create</Button>
         </PHForm>
