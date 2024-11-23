@@ -4,7 +4,10 @@ import { adminPaths } from "../../routes/admin.routes";
 import { facultyPaths } from "../../routes/faculty.routes";
 import { studentPaths } from "../../routes/student.routes";
 import { useAppSelector } from "../../redux/hooks";
-import { selectUser } from "../../redux/features/auth/authSlice";
+import { verifyToken } from "../../utils/verifyToken";
+import { selectToken } from "../../redux/features/auth/authSlice";
+import { NavLink } from "react-router-dom";
+import { SidebarItem } from "../../types";
 
 const { Sider } = Layout;
 
@@ -15,11 +18,24 @@ const ROLE = {
 };
 
 export default function Sidebar() {
-  const user = useAppSelector(selectUser);
+  const token = useAppSelector(selectToken);
 
-  let sidebarItems;
+  let user = null;
 
-  switch (user!.role) {
+  if (token) user = verifyToken(token);
+
+  let sidebarItems: SidebarItem[] = [
+    {
+      key: "About",
+      label: <NavLink to="about">About</NavLink>,
+    },
+    {
+      key: "Contact",
+      label: <NavLink to="contact">Contact</NavLink>,
+    },
+  ];
+
+  switch (user?.role) {
     case ROLE.ADMIN:
       sidebarItems = sidebarItemsGenerator(adminPaths, ROLE.ADMIN);
       break;

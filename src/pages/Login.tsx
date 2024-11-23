@@ -12,8 +12,8 @@ import { FieldValues } from "react-hook-form";
 export default function Login() {
   // define login form default values
   const defaultValues = {
-    userId: "A-0001",
-    password: "admin123",
+    userId: "2025010001",
+    password: "student123",
   };
 
   const dispatch = useAppDispatch();
@@ -36,15 +36,21 @@ export default function Login() {
       };
 
       // instead of getting the result like this {data: {...data}} get this {...data} actual data using unwrap()
-      const result: { data: { accessToken: string } } = await login(
-        loginCredentials
-      ).unwrap();
+      const result: {
+        data: { accessToken: string; needsPasswordChange: boolean };
+      } = await login(loginCredentials).unwrap();
 
       // decode token to get the user: {userId: "", role: ""}
       const user = verifyToken(result.data.accessToken) as User;
 
       // set the user to the local state
       dispatch(setUser({ user, token: result.data.accessToken }));
+
+      // if the user login without changing password
+      if (result.data.needsPasswordChange) {
+        toast.info("You haven't changed your password!", {id: loadingToastId});
+        return navigate(`/change-password`);
+      }
 
       // redirect after login
       navigate(`/${user.role}/dashboard`);
@@ -54,7 +60,7 @@ export default function Login() {
         id: loadingToastId,
         duration: 2000,
       });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast.error(err.data.message, {
         id: loadingToastId,
