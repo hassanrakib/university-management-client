@@ -25,16 +25,18 @@ const studentCourseApi = baseApi.injectEndpoints({
           meta: response.meta,
         };
       },
+      providesTags: ["offeredCourses"],
     }),
-    // addSemesterRegistration: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/semester-registrations/create-semester-registration",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    //   invalidatesTags: ["semesterRegistrations"],
-    // }),
+    addEnrolledCourse: builder.mutation({
+      query: (data) => ({
+        url: "/enrolled-courses/create-enrolled-course",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["offeredCourses"],
+    }),
   }),
 });
 
-export const { useGetAllOfferedCoursesQuery } = studentCourseApi;
+export const { useGetAllOfferedCoursesQuery, useAddEnrolledCourseMutation } =
+  studentCourseApi;
